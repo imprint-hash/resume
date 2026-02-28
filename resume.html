@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>imprint0x — Community Manager</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #111114;
+    --bg2: #161618;
+    --bg3: #1c1c20;
+    --card: #18181c;
+    --border: rgba(139,92,246,0.15);
+    --border2: rgba(139,92,246,0.07);
+    --accent: #8b5cf6;
+    --accent2: #a78bfa;
+    --accent-dim: rgba(139,92,246,0.15);
+    --accent-glow: rgba(139,92,246,0.08);
+    --text: #e8e8f0;
+    --text2: #8b8ba0;
+    --text3: #55556a;
+    --red: #ff4466;
+    --yellow: #ffd166;
+    --mono: 'Space Mono', monospace;
+    --sans: 'Syne', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom cursor */
+  .cursor {
+    position: fixed; top: 0; left: 0;
+    width: 10px; height: 10px;
+    background: var(--accent);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.1s;
+    mix-blend-mode: screen;
+  }
+  .cursor-ring {
+    position: fixed; top: 0; left: 0;
+    width: 36px; height: 36px;
+    border: 1px solid rgba(0,200,180,0.4);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transition: transform 0.12s, width 0.2s, height 0.2s;
+  }
+
+  /* Noise overlay */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.4;
+  }
+
+  /* Grid background */
+  body::after {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: 
+      linear-gradient(rgba(139,92,246,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(139,92,246,0.03) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 48px;
+    background: rgba(8,11,16,0.7);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border2);
+  }
+  .nav-logo {
+    font-family: var(--mono);
+    font-size: 14px;
+    color: var(--accent);
+    letter-spacing: 2px;
+    text-decoration: none;
+  }
+  .nav-logo span { color: var(--text3); }
+  .nav-links { display: flex; gap: 32px; list-style: none; }
+  .nav-links a {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text2);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--accent); }
+
+  /* SECTIONS */
+  section { position: relative; z-index: 2; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 48px; }
+
+  /* HERO */
+  #hero {
+    min-height: 100vh;
+    display: flex; align-items: center;
+    padding: 120px 0 80px;
+    overflow: hidden;
+  }
+  .hero-inner { position: relative; width: 100%; }
+  
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.2s forwards;
+  }
+  .hero-tag::before {
+    content: '';
+    display: inline-block;
+    width: 20px; height: 1px;
+    background: var(--accent);
+  }
+
+  .hero-greeting {
+    font-family: var(--mono);
+    font-size: clamp(16px, 2vw, 22px);
+    color: var(--text2);
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.25s forwards;
+  }
+
+  .hero-name {
+    font-size: clamp(48px, 7vw, 96px);
+    font-weight: 800;
+    line-height: 0.95;
+    letter-spacing: -2px;
+    margin-bottom: 8px;
+    opacity: 0;
+    animation: fadeUp 0.7s 0.3s forwards;
+  }
+  .hero-name .accent { color: var(--accent); }
+  .hero-name .dim { color: var(--text3); }
+
+  .hero-quote {
+    font-family: var(--mono);
+    font-size: clamp(12px, 1.2vw, 14px);
+    color: var(--accent);
+    opacity: 0;
+    animation: fadeUp 0.7s 0.38s forwards;
+    border-left: 2px solid var(--accent);
+    padding-left: 14px;
+    margin-bottom: 20px;
+    max-width: 520px;
+    line-height: 1.6;
+    letter-spacing: 0.3px;
+  }
+
+  .hero-title {
+    font-family: var(--mono);
+    font-size: clamp(12px, 1.5vw, 16px);
+    color: var(--text2);
+    letter-spacing: 1px;
+    margin-bottom: 36px;
+    opacity: 0;
+    animation: fadeUp 0.7s 0.4s forwards;
+  }
+  .hero-title span { color: var(--accent); }
+  .pipe { margin: 0 12px; color: var(--text3); }
+
+  .hero-statement {
+    max-width: 560px;
+    font-size: 17px;
+    line-height: 1.7;
+    color: var(--text2);
+    margin-bottom: 48px;
+    opacity: 0;
+    animation: fadeUp 0.7s 0.5s forwards;
+  }
+  .hero-statement strong { color: var(--text); }
+
+  .hero-ctas {
+    display: flex; gap: 16px;
+    opacity: 0;
+    animation: fadeUp 0.7s 0.6s forwards;
+  }
+  .btn-primary {
+    padding: 14px 32px;
+    background: var(--accent);
+    color: var(--bg);
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-decoration: none;
+    font-weight: 700;
+    border: none; cursor: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(0,200,180,0.3);
+  }
+  .btn-outline {
+    padding: 14px 32px;
+    background: transparent;
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: 1px solid var(--border);
+    cursor: none;
+    transition: border-color 0.2s, background 0.2s;
+    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+  }
+  .btn-outline:hover {
+    border-color: var(--accent);
+    background: var(--accent-dim);
+  }
+
+  /* Floating stat chips */
+  .hero-stats {
+    position: absolute;
+    right: 0; top: 50%;
+    transform: translateY(-50%);
+    display: flex; flex-direction: column; gap: 16px;
+    opacity: 0;
+    animation: fadeLeft 0.8s 0.8s forwards;
+  }
+  .stat-chip {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 16px 24px;
+    min-width: 180px;
+  }
+  .stat-chip .num {
+    font-family: var(--mono);
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--accent);
+    display: block;
+  }
+  .stat-chip .label {
+    font-size: 11px;
+    color: var(--text3);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* Scroll indicator */
+  .scroll-hint {
+    position: absolute;
+    bottom: -40px; left: 0;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--text3);
+    text-transform: uppercase;
+    display: flex; align-items: center; gap: 12px;
+    opacity: 0;
+    animation: fadeUp 0.7s 1s forwards;
+  }
+  .scroll-hint::after {
+    content: '';
+    display: inline-block;
+    width: 1px; height: 40px;
+    background: linear-gradient(to bottom, var(--accent), transparent);
+    animation: pulse 2s infinite;
+  }
+
+  /* ABOUT */
+  #about { padding: 120px 0; }
+  .section-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1; max-width: 60px; height: 1px;
+    background: var(--accent);
+  }
+  .section-title {
+    font-size: clamp(32px, 4vw, 52px);
+    font-weight: 800;
+    letter-spacing: -1px;
+    line-height: 1.1;
+    margin-bottom: 32px;
+  }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: start;
+  }
+  .about-text {
+    font-size: 16px;
+    line-height: 1.8;
+    color: var(--text2);
+  }
+  .about-text p { margin-bottom: 20px; }
+  .about-text strong { color: var(--text); }
+
+  .about-badges {
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .badge-row {
+    display: flex; align-items: center; gap: 16px;
+    padding: 16px 20px;
+    background: var(--card);
+    border: 1px solid var(--border2);
+    border-left: 3px solid var(--accent);
+    transition: border-color 0.2s;
+  }
+  .badge-row:hover { border-color: var(--accent); }
+  .badge-icon {
+    font-size: 20px;
+    width: 36px; text-align: center;
+    flex-shrink: 0;
+  }
+  .badge-text { font-size: 14px; color: var(--text2); }
+  .badge-text strong { color: var(--text); display: block; font-size: 13px; margin-bottom: 2px; }
+
+  /* IMPACT */
+  #impact { padding: 120px 0; background: var(--bg2); }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border2);
+    border: 1px solid var(--border2);
+    margin-top: 48px;
+  }
+  .project-card {
+    background: var(--bg2);
+    padding: 40px 32px;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s;
+  }
+  .project-card:hover { background: var(--card); }
+  .project-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+  .project-card.p1::before { background: var(--accent); }
+  .project-card.p2::before { background: var(--yellow); }
+  .project-card.p3::before { background: #38bdf8; }
+
+  .project-number {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--text3);
+    margin-bottom: 8px;
+  }
+  .project-name {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+  }
+  .project-card.p1 .project-name { color: var(--accent); }
+  .project-card.p2 .project-name { color: var(--yellow); }
+  .project-card.p3 .project-name { color: #38bdf8; }
+
+  .project-role {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text3);
+    letter-spacing: 1px;
+    margin-bottom: 28px;
+  }
+
+  .metric-row {
+    display: flex; gap: 16px; margin-bottom: 24px;
+  }
+  .metric {
+    flex: 1;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--border2);
+    padding: 14px 12px;
+    text-align: center;
+  }
+  .metric-num {
+    font-family: var(--mono);
+    font-size: 22px;
+    font-weight: 700;
+    display: block;
+    margin-bottom: 4px;
+  }
+  .project-card.p1 .metric-num { color: var(--accent); }
+  .project-card.p2 .metric-num { color: var(--yellow); }
+  .project-card.p3 .metric-num { color: #38bdf8; }
+  .metric-label {
+    font-size: 10px;
+    color: var(--text3);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .project-story {
+    font-size: 13px;
+    color: var(--text2);
+    line-height: 1.7;
+    margin-bottom: 16px;
+    font-style: italic;
+    border-left: 2px solid var(--border);
+    padding-left: 12px;
+  }
+
+  .project-points {
+    list-style: none;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .project-points li {
+    font-size: 13px;
+    color: var(--text2);
+    line-height: 1.5;
+    padding-left: 16px;
+    position: relative;
+  }
+  .project-points li::before {
+    content: '→';
+    position: absolute; left: 0;
+    font-family: var(--mono);
+    font-size: 11px;
+  }
+  .project-card.p1 .project-points li::before { color: var(--accent); }
+  .project-card.p2 .project-points li::before { color: var(--yellow); }
+  .project-card.p3 .project-points li::before { color: #38bdf8; }
+
+  /* SKILLS */
+  #skills { padding: 120px 0; }
+
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1px;
+    background: var(--border2);
+    border: 1px solid var(--border2);
+    margin-top: 48px;
+  }
+  .skill-block {
+    background: var(--bg);
+    padding: 32px;
+    transition: background 0.3s;
+  }
+  .skill-block:hover { background: var(--card); }
+  .skill-block-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 20px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .skill-block-title .dot {
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+  }
+
+  .skill-tags {
+    display: flex; flex-wrap: wrap; gap: 8px;
+  }
+  .skill-tag {
+    padding: 6px 14px;
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    font-size: 12px;
+    color: var(--text2);
+    font-family: var(--mono);
+    transition: all 0.2s;
+  }
+  .skill-tag:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-dim);
+  }
+
+  .skill-bar-wrap { margin-top: 16px; }
+  .skill-bar-item { margin-bottom: 14px; }
+  .skill-bar-label {
+    display: flex; justify-content: space-between;
+    font-size: 12px; color: var(--text2);
+    margin-bottom: 6px; font-family: var(--mono);
+  }
+  .skill-bar-track {
+    height: 3px;
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    position: relative;
+    overflow: hidden;
+  }
+  .skill-bar-fill {
+    height: 100%;
+    background: var(--accent);
+    width: 0;
+    transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* EVENTS */
+  #events { padding: 120px 0; background: var(--bg2); }
+
+  .events-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 48px;
+  }
+  .event-card {
+    background: var(--bg);
+    border: 1px solid var(--border2);
+    padding: 28px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s, transform 0.3s;
+  }
+  .event-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-4px);
+  }
+  .event-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .event-card:hover::after { opacity: 1; }
+  .event-icon { font-size: 28px; margin-bottom: 14px; }
+  .event-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .event-desc {
+    font-size: 13px;
+    color: var(--text2);
+    line-height: 1.6;
+  }
+
+  /* TOOLS */
+  #tools { padding: 120px 0; }
+
+  .tools-row {
+    display: flex; flex-wrap: wrap; gap: 12px;
+    margin-top: 48px;
+  }
+  .tool-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 14px 20px;
+    background: var(--card);
+    border: 1px solid var(--border2);
+    font-size: 14px;
+    color: var(--text2);
+    transition: all 0.2s;
+    cursor: default;
+  }
+  .tool-item:hover {
+    border-color: var(--accent);
+    color: var(--text);
+    background: var(--bg3);
+  }
+  .tool-item .tool-dot {
+    width: 8px; height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* CONTACT */
+  #contact { padding: 120px 0; background: var(--bg2); }
+
+  .contact-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: start;
+  }
+  .contact-text {
+    font-size: 16px;
+    color: var(--text2);
+    line-height: 1.8;
+    margin-top: 24px;
+  }
+
+  .contact-links { display: flex; flex-direction: column; gap: 12px; margin-top: 48px; }
+  .contact-link {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 24px;
+    background: var(--bg);
+    border: 1px solid var(--border2);
+    text-decoration: none;
+    transition: all 0.25s;
+    group: true;
+  }
+  .contact-link:hover {
+    border-color: var(--accent);
+    background: var(--accent-dim);
+    transform: translateX(4px);
+  }
+  .contact-link-left { display: flex; align-items: center; gap: 16px; }
+  .contact-link-platform {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text3);
+  }
+  .contact-link-handle {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .contact-link-arrow {
+    font-family: var(--mono);
+    color: var(--accent);
+    font-size: 16px;
+    transition: transform 0.2s;
+  }
+  .contact-link:hover .contact-link-arrow { transform: translateX(4px); }
+
+  .contact-platform-icon {
+    width: 36px; height: 36px;
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  /* FOOTER */
+  footer {
+    padding: 32px 48px;
+    border-top: 1px solid var(--border2);
+    display: flex; justify-content: space-between; align-items: center;
+    position: relative; z-index: 2;
+  }
+  footer .foot-left {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text3);
+    letter-spacing: 1px;
+  }
+  footer .foot-right {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text3);
+  }
+  footer .foot-right span { color: #8b5cf6; }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeLeft {
+    from { opacity: 0; transform: translateX(24px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+  @keyframes scanline {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(100vh); }
+  }
+
+  .fade-in-section {
+    opacity: 0;
+    transform: translateY(32px);
+    transition: opacity 0.7s, transform 0.7s;
+  }
+  .fade-in-section.visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Glow orbs */
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .orb-1 {
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(139,92,246,0.08) 0%, transparent 70%);
+    top: -100px; right: -100px;
+  }
+  .orb-2 {
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(139,92,246,0.05) 0%, transparent 70%);
+    bottom: 0; left: 10%;
+  }
+
+  @media (max-width: 768px) {
+    nav { padding: 16px 24px; }
+    .nav-links { display: none; }
+    .container { padding: 0 24px; }
+    .hero-stats { display: none; }
+    .about-grid, .contact-inner { grid-template-columns: 1fr; gap: 32px; }
+    .projects-grid { grid-template-columns: 1fr; }
+    .skills-grid { grid-template-columns: 1fr; }
+    .events-grid { grid-template-columns: 1fr; }
+    footer { flex-direction: column; gap: 8px; text-align: center; padding: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#hero" class="nav-logo">IMPRINT</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#impact">Impact</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#events">Events</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="container">
+    <div class="hero-inner">
+      <div class="hero-tag">Available for new opportunities</div>
+      <div class="hero-greeting">Hi, I'm</div>
+      <h1 class="hero-name">
+        <span class="accent">IMPRINT</span>
+      </h1>
+      <div class="hero-title">
+        <span>Community Manager</span><span class="pipe">|</span>
+        <span>Discord Moderator</span><span class="pipe">|</span>
+        <span>Customer Support Specialist</span>
+      </div>
+      <div class="hero-quote">"A healthy community is a system built on structure, communication and trust."</div>
+      <p class="hero-statement">
+        <strong>3+ years building and managing Web3 communities</strong> across Discord, Telegram, and on-chain ecosystems. I don't just moderate — I create environments where communities grow, trust is earned, and users feel heard.
+      </p>
+      <div class="hero-ctas">
+        <a href="#impact" class="btn-primary">View My Work</a>
+        <a href="#contact" class="btn-outline">Contact Me</a>
+      </div>
+      <div class="scroll-hint">scroll down</div>
+
+      <!-- Floating stats -->
+      <div class="hero-stats">
+        <div class="stat-chip">
+          <span class="num">3+</span>
+          <span class="label">Web3 Projects</span>
+        </div>
+        <div class="stat-chip">
+          <span class="num">40%↑</span>
+          <span class="label">Avg Engagement</span>
+        </div>
+        <div class="stat-chip">
+          <span class="num">1000s</span>
+          <span class="label">Tickets Resolved</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="container">
+    <div class="fade-in-section">
+      <div class="section-label">01 — About Me</div>
+      <h2 class="section-title">How it all<br>started.</h2>
+      <div class="about-grid">
+        <div class="about-text">
+          <p>I didn't start out with a title. I started as someone who genuinely cared about the communities I was part of — showing up every day, answering questions nobody else wanted to answer, and keeping things civil when things got heated.</p>
+          <p>Over time, that turned into something real. I've worked with <strong>ASIC GENESIS</strong>, <strong>COINTEL</strong>, and <strong>Beacon</strong> — three very different projects, each one teaching me something new about what it means to hold a community together when the pressure is on.</p>
+          <p>What I've learned is this: <strong>people don't stay in communities because of the tech — they stay because of how it feels.</strong> That's what I build. Spaces where people feel heard, respected, and excited to come back.</p>
+        </div>
+        <div class="about-badges">
+          <div class="badge-row">
+            <span class="badge-icon">🛡️</span>
+            <div class="badge-text">
+              <strong>Conflict Resolution</strong>
+              De-escalation in high-tension community moments, maintaining neutrality and trust.
+            </div>
+          </div>
+          <div class="badge-row">
+            <span class="badge-icon">📈</span>
+            <div class="badge-text">
+              <strong>Community Growth</strong>
+              Invite events, engagement campaigns, and retention strategies that move the needle.
+            </div>
+          </div>
+          <div class="badge-row">
+            <span class="badge-icon">🔧</span>
+            <div class="badge-text">
+              <strong>Support Systems</strong>
+              Ticket triage, dev relay, and rapid issue resolution across multiple platforms.
+            </div>
+          </div>
+          <div class="badge-row">
+            <span class="badge-icon">🤝</span>
+            <div class="badge-text">
+              <strong>Cross-team Collaboration</strong>
+              Bridge between community and dev/product teams, translating feedback clearly.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- IMPACT -->
+<section id="impact">
+  <div class="container">
+    <div class="fade-in-section">
+      <div class="section-label">02 — Impact & Results</div>
+      <h2 class="section-title">Projects &<br>Outcomes.</h2>
+      <div class="projects-grid">
+
+        <!-- ASIC GENESIS -->
+        <div class="project-card p1">
+          <div class="project-number">Project 01</div>
+          <div class="project-name">ASIC GENESIS</div>
+          <div class="project-role">Community Manager / Discord Moderator</div>
+          <div class="metric-row">
+            <div class="metric">
+              <span class="metric-num">+35%</span>
+              <span class="metric-label">Member Growth</span>
+            </div>
+            <div class="metric">
+              <span class="metric-num">100+</span>
+              <span class="metric-label">Bots Removed</span>
+            </div>
+          </div>
+          <p class="project-story">ASIC GENESIS was my proving ground. I walked into a server that had potential but needed structure. My first week, I was already dealing with spam bots flooding the chat — so I got to work cleaning it up. Then came the fun part.</p>
+          <ul class="project-points">
+            <li>Ran Discord invite events that consistently pulled in new members and created a buzz around the project</li>
+            <li>Hosted Quiz Nights and Rumble events — the server came alive on those nights, engagement jumped ~40%</li>
+            <li>Removed 100+ spam bots, making the server feel safe and credible again</li>
+            <li>Built onboarding flows so new members actually stuck around instead of going quiet</li>
+          </ul>
+        </div>
+
+        <!-- COINTEL -->
+        <div class="project-card p2">
+          <div class="project-number">Project 02</div>
+          <div class="project-name">COINTEL</div>
+          <div class="project-role">Moderator / Support Specialist</div>
+          <div class="metric-row">
+            <div class="metric">
+              <span class="metric-num">~50%</span>
+              <span class="metric-label">Faster Resolution</span>
+            </div>
+            <div class="metric">
+              <span class="metric-num">100%</span>
+              <span class="metric-label">Ticket Coverage</span>
+            </div>
+          </div>
+          <p class="project-story">COINTEL pushed me into support operations at a level I hadn't experienced before. The volume was higher, the users were more demanding, and the margin for error was smaller. I had to level up fast.</p>
+          <ul class="project-points">
+            <li>Organised creator campaigns that brought real energy into the channels — not just numbers, but actual conversation</li>
+            <li>Rebuilt the way issues were triaged, cutting resolution time nearly in half</li>
+            <li>Cleared out bots that had been quietly polluting the community for weeks</li>
+            <li>Answered every single ticket — no backlog, no ignored messages, no one left waiting</li>
+          </ul>
+        </div>
+
+        <!-- BEACON -->
+        <div class="project-card p3">
+          <div class="project-number">Project 03</div>
+          <div class="project-name">BEACON</div>
+          <div class="project-role">Customer Support Specialist</div>
+          <div class="metric-row">
+            <div class="metric">
+              <span class="metric-num">High</span>
+              <span class="metric-label">Volume Support</span>
+            </div>
+            <div class="metric">
+              <span class="metric-num">↑ Trust</span>
+              <span class="metric-label">During Outages</span>
+            </div>
+          </div>
+          <p class="project-story">Beacon was where I learned what real pressure feels like. During outages and major updates, the community would spiral fast. My job was to be the calm in the storm — the voice that said "we see it, we're on it."</p>
+          <ul class="project-points">
+            <li>Managed high-volume support queues without dropping the ball — every message got a response</li>
+            <li>Became the bridge between frustrated users and the dev team, translating technical chaos into plain answers</li>
+            <li>Kept community trust intact during some genuinely rough moments — no mass exits, no meltdowns</li>
+            <li>Relayed structured bug reports and feedback that actually helped the team move faster</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="container">
+    <div class="fade-in-section">
+      <div class="section-label">03 — What I Bring</div>
+      <h2 class="section-title">The tools I picked<br>up along the way.</h2>
+      <div class="skills-grid">
+
+        <div class="skill-block">
+          <div class="skill-block-title"><span class="dot"></span> Discord Mastery</div>
+          <div class="skill-tags">
+            <span class="skill-tag">Permissions Architecture</span>
+            <span class="skill-tag">Bot Configuration</span>
+            <span class="skill-tag">AutoMod Setup</span>
+            <span class="skill-tag">Channel Structuring</span>
+            <span class="skill-tag">Role Management</span>
+            <span class="skill-tag">Server Audit Logs</span>
+            <span class="skill-tag">Carl-bot</span>
+            <span class="skill-tag">MEE6</span>
+            <span class="skill-tag">Dyno</span>
+          </div>
+          <div class="skill-bar-wrap" style="margin-top:20px">
+            <div class="skill-bar-item">
+              <div class="skill-bar-label"><span>Discord Administration</span><span>Expert</span></div>
+              <div class="skill-bar-track"><div class="skill-bar-fill" data-width="93"></div></div>
+            </div>
+            <div class="skill-bar-item">
+              <div class="skill-bar-label"><span>Bot Management</span><span>Advanced</span></div>
+              <div class="skill-bar-track"><div class="skill-bar-fill" data-width="85"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="skill-block">
+          <div class="skill-block-title"><span class="dot"></span> Support & Communication</div>
+          <div class="skill-tags">
+            <span class="skill-tag">Zendesk</span>
+            <span class="skill-tag">Jira</span>
+            <span class="skill-tag">Ticket Triage</span>
+            <span class="skill-tag">Dev Escalation</span>
+            <span class="skill-tag">SLA Management</span>
+            <span class="skill-tag">Technical Writing</span>
+            <span class="skill-tag">English (Fluent)</span>
+          </div>
+          <div class="skill-bar-wrap" style="margin-top:20px">
+            <div class="skill-bar-item">
+              <div class="skill-bar-label"><span>English Communication</span><span>Native/Fluent</span></div>
+              <div class="skill-bar-track"><div class="skill-bar-fill" data-width="98"></div></div>
+            </div>
+            <div class="skill-bar-item">
+              <div class="skill-bar-label"><span>Ticketing Systems</span><span>Advanced</span></div>
+              <div class="skill-bar-track"><div class="skill-bar-fill" data-width="88"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="skill-block">
+          <div class="skill-block-title"><span class="dot"></span> Community Strategy</div>
+          <div class="skill-tags">
+            <span class="skill-tag">Community Analytics</span>
+            <span class="skill-tag">Engagement Campaigns</span>
+            <span class="skill-tag">Conflict Resolution</span>
+            <span class="skill-tag">Retention Strategy</span>
+            <span class="skill-tag">Onboarding Flows</span>
+            <span class="skill-tag">AMA Hosting</span>
+          </div>
+          <div class="skill-bar-wrap" style="margin-top:20px">
+            <div class="skill-bar-item">
+              <div class="skill-bar-label"><span>Conflict Resolution</span><span>Expert</span></div>
+              <div class="skill-bar-track"><div class="skill-bar-fill" data-width="90"></div></div>
+            </div>
+            <div class="skill-bar-item">
+              <div class="skill-bar-label"><span>Engagement Growth</span><span>Advanced</span></div>
+              <div class="skill-bar-track"><div class="skill-bar-fill" data-width="87"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="skill-block">
+          <div class="skill-block-title"><span class="dot"></span> Web3 Ecosystem</div>
+          <div class="skill-tags">
+            <span class="skill-tag">Crypto Culture</span>
+            <span class="skill-tag">NFT Communities</span>
+            <span class="skill-tag">DeFi Protocols</span>
+            <span class="skill-tag">Telegram Management</span>
+            <span class="skill-tag">DAO Operations</span>
+            <span class="skill-tag">Wallet Support</span>
+          </div>
+          <div class="skill-bar-wrap" style="margin-top:20px">
+            <div class="skill-bar-item">
+              <div class="skill-bar-label"><span>Web3 Knowledge</span><span>Advanced</span></div>
+              <div class="skill-bar-track"><div class="skill-bar-fill" data-width="86"></div></div>
+            </div>
+            <div class="skill-bar-item">
+              <div class="skill-bar-label"><span>Telegram Bot Management</span><span>Proficient</span></div>
+              <div class="skill-bar-track"><div class="skill-bar-fill" data-width="80"></div></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EVENTS -->
+<section id="events">
+  <div class="container">
+    <div class="fade-in-section">
+      <div class="section-label">04 — Event Hosting</div>
+      <h2 class="section-title">The nights people<br>actually showed up.</h2>
+      <div class="events-grid">
+        <div class="event-card">
+          <div class="event-icon">🧠</div>
+          <div class="event-title">Community Quiz Nights</div>
+          <div class="event-desc">These were some of my favourite nights to run. I'd put together rounds of Web3 trivia, keep the energy up in chat, and watch people who barely talked suddenly going head-to-head. Participation would spike every single time.</div>
+        </div>
+        <div class="event-card">
+          <div class="event-icon">⚔️</div>
+          <div class="event-title">Community Rumble</div>
+          <div class="event-desc">The Rumble was my answer to a server that needed a reason to compete. I designed the format, ran the rounds, and kept it fair. People who hadn't been active in weeks would show up just for these — that told me everything.</div>
+        </div>
+        <div class="event-card">
+          <div class="event-icon">📣</div>
+          <div class="event-title">AMA Sessions</div>
+          <div class="event-desc">AMAs are high-stakes — one bad moment and the whole community sees it. I learned to prep questions in advance, filter the noise in real-time, and keep the conversation focused so both sides walked away feeling good about it.</div>
+        </div>
+        <div class="event-card">
+          <div class="event-icon">🎨</div>
+          <div class="event-title">Creator Campaigns</div>
+          <div class="event-desc">On COINTEL I helped bring creators into the fold — not as promoters, but as genuine participants. The content they made felt real because it was. That kind of campaign doesn't happen without someone managing the relationship carefully.</div>
+        </div>
+        <div class="event-card">
+          <div class="event-icon">🔗</div>
+          <div class="event-title">Invite Events</div>
+          <div class="event-desc">I learned early that raw member count means nothing if people don't stay. So I built invite events around quality — reward structures that brought in the right people, not just anyone with a link.</div>
+        </div>
+        <div class="event-card">
+          <div class="event-icon">🏆</div>
+          <div class="event-title">Engagement Contests</div>
+          <div class="event-desc">The goal was never just a one-time spike. I wanted habits. So I designed contests with leaderboards, clear rules, and rewards that kept people checking in — even on quiet days. It worked.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TOOLS -->
+<section id="tools">
+  <div class="container">
+    <div class="fade-in-section">
+      <div class="section-label">05 — Tools & Platforms</div>
+      <h2 class="section-title">My Stack.</h2>
+      <div class="tools-row">
+        <div class="tool-item"><span class="tool-dot"></span> Discord</div>
+        <div class="tool-item"><span class="tool-dot"></span> Telegram</div>
+        <div class="tool-item"><span class="tool-dot"></span> Zendesk</div>
+        <div class="tool-item"><span class="tool-dot"></span> Jira</div>
+        <div class="tool-item"><span class="tool-dot"></span> Notion</div>
+        <div class="tool-item"><span class="tool-dot"></span> Google Workspace</div>
+        <div class="tool-item"><span class="tool-dot"></span> Carl-bot</div>
+        <div class="tool-item"><span class="tool-dot"></span> MEE6</div>
+        <div class="tool-item"><span class="tool-dot"></span> Dyno</div>
+        <div class="tool-item"><span class="tool-dot"></span> Twitter / X</div>
+        <div class="tool-item"><span class="tool-dot"></span> Discord AutoMod</div>
+        <div class="tool-item"><span class="tool-dot"></span> Crypto Wallets</div>
+        <div class="tool-item"><span class="tool-dot"></span> NFT Platforms</div>
+        <div class="tool-item"><span class="tool-dot"></span> DeFi Protocols</div>
+        <div class="tool-item"><span class="tool-dot"></span> DAO Tools</div>
+        <div class="tool-item"><span class="tool-dot"></span> Analytics Dashboards</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="container">
+    <div class="fade-in-section">
+      <div class="section-label">06 — Contact</div>
+      <div class="contact-inner">
+        <div>
+          <h2 class="section-title">Let's write the<br>next chapter.</h2>
+          <p class="contact-text">Every project I've worked on started with a conversation. If you're building something in Web3 and you need someone who shows up, gives a damn, and knows how to hold a community together — that's me. Let's talk.</p>
+        </div>
+        <div class="contact-links">
+          <a href="https://discord.com/users/imprint232" class="contact-link" target="_blank" rel="noopener noreferrer">
+            <div class="contact-link-left">
+              <div class="contact-platform-icon">💬</div>
+              <div>
+                <div class="contact-link-platform">Discord</div>
+                <div class="contact-link-handle">imprint232</div>
+              </div>
+            </div>
+            <span class="contact-link-arrow">→</span>
+          </a>
+          <a href="https://twitter.com/imprint_0x" class="contact-link" target="_blank" rel="noopener noreferrer">
+            <div class="contact-link-left">
+              <div class="contact-platform-icon">✕</div>
+              <div>
+                <div class="contact-link-platform">X / Twitter</div>
+                <div class="contact-link-handle">@imprint_0x</div>
+              </div>
+            </div>
+            <span class="contact-link-arrow">→</span>
+          </a>
+          <a href="https://t.me/imprint0x" class="contact-link" target="_blank" rel="noopener noreferrer">
+            <div class="contact-link-left">
+              <div class="contact-platform-icon">✈️</div>
+              <div>
+                <div class="contact-link-platform">Telegram</div>
+                <div class="contact-link-handle">@imprint0x</div>
+              </div>
+            </div>
+            <span class="contact-link-arrow">→</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="foot-left">© 2025 imprint0x — All rights reserved</div>
+  <div class="foot-right">Built for Web3 <span>■</span> Community-first</div>
+</footer>
+
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.transform = `translate(${mx - 5}px, ${my - 5}px)`;
+  });
+
+  function animateRing() {
+    rx += (mx - rx - 18) * 0.12;
+    ry += (my - ry - 18) * 0.12;
+    ring.style.transform = `translate(${rx}px, ${ry}px)`;
+    requestAnimationFrame(animateRing);
+  }
+  animateRing();
+
+  document.querySelectorAll('a, button, .btn-primary, .btn-outline').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cursor.style.transform += ' scale(1.5)';
+      ring.style.width = '52px';
+      ring.style.height = '52px';
+    });
+    el.addEventListener('mouseleave', () => {
+      ring.style.width = '36px';
+      ring.style.height = '36px';
+    });
+  });
+
+  // Intersection observer for fade-in sections
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        // Animate skill bars when in view
+        entry.target.querySelectorAll('.skill-bar-fill').forEach(bar => {
+          const w = bar.getAttribute('data-width');
+          setTimeout(() => bar.style.width = w + '%', 200);
+        });
+      }
+    });
+  }, { threshold: 0.15 });
+
+  document.querySelectorAll('.fade-in-section').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
